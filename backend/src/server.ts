@@ -27,7 +27,6 @@ app.get("/api/chat", async (req, res) => {
   if (!prompt) {
     res.write(
       `data: ${JSON.stringify({
-        success: false,
         error: "No prompt provided",
       })}\n\n`
     );
@@ -54,9 +53,7 @@ app.get("/api/chat", async (req, res) => {
       const content = chunk.choices[0]?.delta?.content || "";
       if (content) {
         try {
-          res.write(
-            `data: ${JSON.stringify({ success: true, data: content })}\n\n`
-          );
+          res.write(`data: ${JSON.stringify({ data: content })}\n\n`);
         } catch (err) {
           break;
         }
@@ -64,14 +61,13 @@ app.get("/api/chat", async (req, res) => {
     }
 
     if (!clientDisconnected) {
-      res.write(`data: ${JSON.stringify({ success: true, done: true })}\n\n`);
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
       res.end();
     }
   } catch (error) {
     if (!clientDisconnected) {
       res.write(
         `data: ${JSON.stringify({
-          success: false,
           error: error instanceof Error ? error.message : String(error),
         })}\n\n`
       );
