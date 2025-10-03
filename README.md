@@ -1,0 +1,57 @@
+# Chatbot Project (Next.js + Express + OpenAI)
+
+Prosty projekt chatbot-a z OpenAI, z backendem w Express i frontendem w Next.js + Tailwind.  
+Backend obsługuje streaming SSE, frontend wyświetla wiadomości w czasie rzeczywistym.
+
+---
+
+## 📁 Struktura projektu
+
+root/
+├─ frontend/ # Next.js + Tailwind
+└─ backend/ # Express + TypeScript
+
+---
+
+## ⚙️ Wymagania
+
+- Node.js v18+
+- npm 9+
+- Klucz API OpenAI (dla backendu)
+
+---
+
+## 📝 Konfiguracja
+
+1. Skopiuj plik `.env.example` do `.env` w backendzie:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+2. Uzupełnij swój klucz OpenAI w `.env`:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+---
+
+## 🚀 Uruchamianie projektu lokalnie
+
+### Backend
+
+cd backend
+npm install
+npm run dev
+
+Serwer działa na: http://localhost:5000
+
+### Frontend
+
+cd frontend
+npm install
+npm run dev
+
+Frontend działa na: http://localhost:3000
