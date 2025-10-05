@@ -2,9 +2,14 @@
 
 import { useEffect, useRef, useState } from "react";
 
+interface IChatMessage {
+  sender: "user" | "bot";
+  text: string;
+}
+
 export const ChatWindow = () => {
   const [message, setMessage] = useState("");
-  const [chat, setChat] = useState("");
+  const [chat, setChat] = useState<IChatMessage[]>([]);
   const eventSourceRef = useRef<EventSource | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -38,9 +43,21 @@ export const ChatWindow = () => {
       )}`
     );
 
+    setChat((prev) => {
+      const newChat = [
+        ...prev,
+        { sender: "user", text: message } as IChatMessage,
+        { sender: "bot", text: "" } as IChatMessage,
+      ];
+      return newChat;
+    });
+
+    const chatMessageIndex = chat.length + 1;
+
     eventSource.onmessage = (e) => {
       try {
         const data = JSON.parse(e.data);
+
         if (data.done) {
           eventSource.close();
           eventSourceRef.current = null;
@@ -48,21 +65,42 @@ export const ChatWindow = () => {
         }
 
         if (data.error) {
-          setChat((prev) => prev + `\n Error: ${data.error}`);
+          setChat((prev) =>
+            prev.map((msg, i) =>
+              i === chatMessageIndex
+                ? { ...msg, text: `Error: ${data.error}` }
+                : msg
+            )
+          );
           eventSource.close();
           eventSourceRef.current = null;
           return;
         }
 
         if (data.data) {
-          setChat((prev) => prev + data.data);
+          setChat((prev) =>
+            prev.map((msg, i) =>
+              i === chatMessageIndex
+                ? { ...msg, text: msg.text + data.data }
+                : msg
+            )
+          );
         }
       } catch {
-        setChat((prev) => prev + e.data);
+        setChat((prev) =>
+          prev.map((msg, i) =>
+            i === chatMessageIndex ? { ...msg, text: e.data } : msg
+          )
+        );
       }
     };
 
     eventSource.onerror = () => {
+      setChat((prev) => [
+        ...prev,
+        { sender: "bot", text: "Błąd połączenia z API." },
+      ]);
+
       eventSource.close();
       eventSourceRef.current = null;
     };
@@ -80,13 +118,25 @@ export const ChatWindow = () => {
 
       <div
         ref={containerRef}
-        className="border border-gray-300 p-4 h-64 overflow-auto whitespace-pre-wrap bg-gray-50"
+        className="border border-gray-300 p-4 h-96 overflow-auto whitespace-pre-wrap bg-gray-50"
       >
-        {chat || (
-          <span className="text-gray-400">
-            Twoja rozmowa pojawi się tutaj...
-          </span>
-        )}
+        <div className="flex flex-col gap-2">
+          {chat.map((msg, i) => {
+            if (!msg.text) return;
+            return (
+              <div
+                key={i}
+                className={`max-w-[75%] p-2 rounded-md ${
+                  msg.sender === "user"
+                    ? "bg-gray-500 text-white self-end"
+                    : "bg-gray-200 text-gray-800 self-start"
+                }`}
+              >
+                {msg.text}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex gap-2">
