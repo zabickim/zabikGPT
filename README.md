@@ -7,9 +7,11 @@ Backend obsługuje streaming SSE, frontend wyświetla wiadomości w czasie rzecz
 
 ## 📁 Struktura projektu
 
+```text
 root/
 ├─ frontend/ # Next.js + Tailwind
 └─ backend/ # Express + TypeScript
+```
 
 ---
 
