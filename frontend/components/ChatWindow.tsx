@@ -6,6 +6,24 @@ export const ChatWindow = () => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState("");
   const eventSourceRef = useRef<EventSource | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const currentEventSource = eventSourceRef.current;
+
+    return () => {
+      if (currentEventSource) {
+        currentEventSource.close();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    containerRef.current?.scrollTo({
+      top: containerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [chat]);
 
   const handleSend = () => {
     if (!message.trim()) return;
@@ -54,23 +72,16 @@ export const ChatWindow = () => {
     setMessage("");
   };
 
-  useEffect(() => {
-    const currentEventSource = eventSourceRef.current;
-
-    return () => {
-      if (currentEventSource) {
-        currentEventSource.close();
-      }
-    };
-  }, []);
-
   return (
     <div className="max-w-2xl mx-auto mt-10 p-4 space-y-4 shadow-lg bg-white">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
         ZabikGPT
       </h1>
 
-      <div className="border border-gray-300 p-4 h-64 overflow-auto whitespace-pre-wrap bg-gray-50">
+      <div
+        ref={containerRef}
+        className="border border-gray-300 p-4 h-64 overflow-auto whitespace-pre-wrap bg-gray-50"
+      >
         {chat || (
           <span className="text-gray-400">
             Twoja rozmowa pojawi się tutaj...
