@@ -65,27 +65,35 @@ export const ChatWindow = () => {
   }, []);
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 space-y-2">
-      <h1 className="text-2xl font-bold text-center">ZabikGPT</h1>
-      <div className="border p-4 h-64 overflow-auto whitespace-pre-wrap bg-gray-50">
-        {chat}
+    <div className="max-w-2xl mx-auto mt-10 p-4 space-y-4 shadow-lg bg-white">
+      <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
+        ZabikGPT
+      </h1>
+
+      <div className="border border-gray-300 p-4 h-64 overflow-auto whitespace-pre-wrap bg-gray-50">
+        {chat || (
+          <span className="text-gray-400">
+            Twoja rozmowa pojawi się tutaj...
+          </span>
+        )}
       </div>
 
-      <input
-        type="text"
-        className="border p-2 w-full"
-        placeholder="Napisz wiadomość..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSend()}
-      />
-
-      <button
-        className="bg-gray-500 text-white p-2 w-full"
-        onClick={handleSend}
-      >
-        Wyślij
-      </button>
+      <div className="flex gap-2">
+        <input
+          type="text"
+          className="border border-gray-300 p-2 flex-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
+          placeholder="Napisz wiadomość..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        />
+        <button
+          className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 rounded-md transition"
+          onClick={handleSend}
+        >
+          Wyślij
+        </button>
+      </div>
     </div>
   );
 };
