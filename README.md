@@ -25,17 +25,23 @@ root/
 
 ## 📝 Konfiguracja
 
-1. Skopiuj plik `.env.example` do `.env` w backendzie:
+1. Uzupełnij swój klucz OpenAI w `.env.example`:
+
+```env
+OPENAI_API_KEY=your_openai_api_key
+NEXT_PUBLIC_API_URL=http://localhost:5000
+```
+
+2. Skopiuj plik `.env.example` do `.env` w backendzie:
 
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-2. Uzupełnij swój klucz OpenAI w `.env`:
+3. Skopiuj plik `.env.example` do `.env` we frontendzie:
 
-```env
-OPENAI_API_KEY=your_openai_api_key
-NEXT_PUBLIC_API_URL=http://localhost:5000
+```bash
+cp frontend/.env.example frontend/.env
 ```
 
 ---
