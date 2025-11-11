@@ -1,26 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { IChatMessage } from "../types";
+import { useEffect, useRef } from "react";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
+import { useChat } from "../hooks/useChat";
 
 export const ChatWindow = () => {
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState<IChatMessage[]>([]);
-  const eventSourceRef = useRef<EventSource | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const { message, setMessage, chat, sendMessage } = useChat();
   const endRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const currentEventSource = eventSourceRef.current;
-
-    return () => {
-      if (currentEventSource) {
-        currentEventSource.close();
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const node = endRef.current;
@@ -29,96 +16,13 @@ export const ChatWindow = () => {
     }
   }, [chat]);
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-    }
-
-    const eventSource = new EventSource(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/chat?prompt=${encodeURIComponent(
-        message
-      )}`
-    );
-
-    setChat((prev) => {
-      const newChat = [
-        ...prev,
-        { sender: "user", text: message } as IChatMessage,
-        { sender: "bot", text: "" } as IChatMessage,
-      ];
-      return newChat;
-    });
-
-    const chatMessageIndex = chat.length + 1;
-
-    eventSource.onmessage = (e) => {
-      try {
-        const data = JSON.parse(e.data);
-
-        if (data.done) {
-          eventSource.close();
-          eventSourceRef.current = null;
-          return;
-        }
-
-        if (data.error) {
-          setChat((prev) =>
-            prev.map((msg, i) =>
-              i === chatMessageIndex
-                ? { ...msg, text: `Error: ${data.error}` }
-                : msg
-            )
-          );
-          eventSource.close();
-          eventSourceRef.current = null;
-          return;
-        }
-
-        if (data.data) {
-          setChat((prev) =>
-            prev.map((msg, i) =>
-              i === chatMessageIndex
-                ? { ...msg, text: msg.text + data.data }
-                : msg
-            )
-          );
-        }
-      } catch {
-        setChat((prev) =>
-          prev.map((msg, i) =>
-            i === chatMessageIndex ? { ...msg, text: e.data } : msg
-          )
-        );
-      }
-    };
-
-    eventSource.onerror = () => {
-      setChat((prev) => [
-        ...prev,
-        { sender: "bot", text: "Błąd połączenia z API." },
-      ]);
-
-      eventSource.close();
-      eventSourceRef.current = null;
-    };
-
-    eventSourceRef.current = eventSource;
-
-    setMessage("");
-  };
-
   return (
     <div className="max-w-2xl mx-auto mt-10 p-4 space-y-4 shadow-lg bg-white">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-4">
         ZabikGPT
       </h1>
 
-      <div
-        ref={containerRef}
-        className="border border-gray-300 p-4 h-96 overflow-auto whitespace-pre-wrap bg-gray-50"
-      >
+      <div className="border border-gray-300 p-4 h-96 overflow-auto whitespace-pre-wrap bg-gray-50">
         <div className="flex flex-col gap-2">
           {chat.map((msg, i) => (
             <ChatMessage key={i} msg={msg} />
@@ -130,7 +34,7 @@ export const ChatWindow = () => {
       <ChatInput
         message={message}
         setMessage={setMessage}
-        onSend={handleSend}
+        onSend={sendMessage}
       />
     </div>
   );
