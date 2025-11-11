@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-interface IChatMessage {
-  sender: "user" | "bot";
-  text: string;
-}
+import { IChatMessage } from "../types";
+import { ChatMessage } from "./ChatMessage";
 
 export const ChatWindow = () => {
   const [message, setMessage] = useState("");
@@ -122,21 +119,9 @@ export const ChatWindow = () => {
         className="border border-gray-300 p-4 h-96 overflow-auto whitespace-pre-wrap bg-gray-50"
       >
         <div className="flex flex-col gap-2">
-          {chat.map((msg, i) => {
-            if (!msg.text) return;
-            return (
-              <div
-                key={i}
-                className={`max-w-[75%] p-2 rounded-md ${
-                  msg.sender === "user"
-                    ? "bg-gray-500 text-white self-end"
-                    : "bg-gray-200 text-gray-800 self-start"
-                }`}
-              >
-                {msg.text}
-              </div>
-            );
-          })}
+          {chat.map((msg, i) => (
+            <ChatMessage key={i} msg={msg} />
+          ))}
           <div ref={endRef} />
         </div>
       </div>
