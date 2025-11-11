@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { IChatMessage } from "../types";
 import { ChatMessage } from "./ChatMessage";
+import { ChatInput } from "./ChatInput";
 
 export const ChatWindow = () => {
   const [message, setMessage] = useState("");
@@ -126,22 +127,11 @@ export const ChatWindow = () => {
         </div>
       </div>
 
-      <div className="flex gap-2">
-        <input
-          type="text"
-          className="border border-gray-300 p-2 flex-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
-          placeholder="Napisz wiadomość..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-        />
-        <button
-          className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-4 rounded-md transition"
-          onClick={handleSend}
-        >
-          Wyślij
-        </button>
-      </div>
+      <ChatInput
+        message={message}
+        setMessage={setMessage}
+        onSend={handleSend}
+      />
     </div>
   );
 };
