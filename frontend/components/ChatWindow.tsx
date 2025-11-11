@@ -11,7 +11,8 @@ export const ChatWindow = () => {
   const [message, setMessage] = useState("");
   const [chat, setChat] = useState<IChatMessage[]>([]);
   const eventSourceRef = useRef<EventSource | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const endRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const currentEventSource = eventSourceRef.current;
@@ -24,18 +25,9 @@ export const ChatWindow = () => {
   }, []);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const isNearBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight <
-      50;
-
-    if (isNearBottom) {
-      container.scrollTo({
-        top: container.scrollHeight,
-        behavior: "smooth",
-      });
+    const node = endRef.current;
+    if (node) {
+      node.scrollIntoView({ behavior: "smooth", block: "end" });
     }
   }, [chat]);
 
@@ -145,6 +137,7 @@ export const ChatWindow = () => {
               </div>
             );
           })}
+          <div ref={endRef} />
         </div>
       </div>
 
